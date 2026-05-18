@@ -1,6 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from 'mongoose';
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
 
 @Schema({ timestamps: true })
 export class User {
@@ -12,6 +17,19 @@ export class User {
 
     @Prop({ require: true, unique: true})
     mail: string;
+
+    @Prop({ required: true })
+    password: string;
+
+    @Prop({
+        type: String,
+        enum: UserRole,
+        default: UserRole.USER,
+    })
+    role: UserRole;
+
+    @Prop({ default: true })
+    isActive: boolean;
 
 }
 

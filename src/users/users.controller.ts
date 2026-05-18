@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { CreateUserDto } from './dto/create_user_dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -8,9 +8,9 @@ export class UsersController {
   //Creamos un método - Una api una ruta que vamos a usar
 
 
-    constructor(
-        private readonly usersService:UsersService
-    ){}
+  constructor(
+    private readonly usersService: UsersService
+  ) { }
 
 
 
@@ -27,12 +27,15 @@ export class UsersController {
   }
 
   @Get()
-    getUsers() {
-      const user = {
-        id: "HolaDesdeGet",
-        name: "FranciscoDesdeGet",
-      }
-
-      return user
+  getUsers() {
+    /*
+    const user = {
+      id: "HolaDesdeGet",
+      name: "FranciscoDesdeGet",
     }
+    */
+    const users = this.usersService.findAllUsers();
+
+    return users
+  }
 }
