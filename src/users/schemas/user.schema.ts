@@ -7,8 +7,8 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
-@Schema({ timestamps: true })
-export class User {
+@Schema({ timestamps: true }) //Defino lo que va a estar en la base de datos
+export class User extends Document {
     @Prop({ require: true})
     name: string;
 

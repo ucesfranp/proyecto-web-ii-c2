@@ -22,11 +22,27 @@ export class UsersMongooseDao implements IUsersDao {
   ) {}
 
   async create(userData: CreateUserDto): Promise<User> {
+    //Este creadoUsuario no es el que va a llegar finalmente a la base de datos, sino una instancia de la clase User de Mongoose
+    console.log("userData: ", userData);
+
     const createdUser = new this.userModel(userData);
-    return createdUser.save();
+    console.log("createdUser: ", createdUser);
+
+
+
+
+    const createdUserFromDB = await createdUser.save();
+    console.log("createdUserFromDB: ", createdUserFromDB);
+
+    return createdUserFromDB;
+   
   }
 
+
+
+
   async findByEmail(email: string): Promise<User | null> {
+    console.log("Mail a buscar si existe: ", email);
     return this.userModel.findOne({ mail: email }).exec();
   }
 

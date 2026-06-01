@@ -23,6 +23,7 @@ export class UsersRepository implements IUsersRepository {
     return this.dao.create(userData);
   }
 
+
   async findByEmail(email: string): Promise<User | null> {
     return this.dao.findByEmail(email);
   }

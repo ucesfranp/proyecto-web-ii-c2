@@ -1,14 +1,15 @@
 /* eslint-disable no-empty */
 /* eslint-disable prettier/prettier */
 
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { InjectModel } from '@nestjs/mongoose/dist/common/mongoose.decorators';
-import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+
+import { CreateUserDto } from '../dto/create-user.dto';
+//import { InjectModel } from '@nestjs/mongoose/dist/common/mongoose.decorators';
+import { User } from '../schemas/user.schema';
+//import { Model } from 'mongoose';
 import { plainToClass } from 'class-transformer';
-import { UserResponseDto } from './dto/user-response.dto';
-import { IUsersRepository } from './repository/users.repository';
+import { UserResponseDto } from '../dto/user-response.dto';
+import type { IUsersRepository } from '../repository/users.repository';
 
 @Injectable()
 export class UsersService {
@@ -54,15 +55,43 @@ export class UsersService {
         return this.userModel.find().exec();
     }
     */
-   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const existingUser = await this.usersRepository.findByEmail(createUserDto.mail);
-    if (existingUser) {
-      throw new ConflictException('Email already exists');
+   
+    constructor(
+        @Inject('IUsersRepository')
+        private readonly usersRepository: IUsersRepository
+    ) {}
+   
+    async create(createUserDto: CreateUserDto): Promise<UserResponseDto | null> {
+
+
+        try {
+
+            console.log("createUserDto service: ", createUserDto);
+
+            /* //Req de negocio: NO puede haber usuarios con ese mail
+            const existingUser = await this.findByEmail(createUserDto.mail)
+            console.log("existingUser: ", existingUser);
+
+            if (existingUser) {
+                throw new ConflictException('Email already exists');
+            } */ //Todo esto lo saco porque ahora lo hace el auth.service la validacion esta
+
+            const user = await this.usersRepository.create(createUserDto);
+            return plainToClass(UserResponseDto, user.toObject());
+
+        } catch(error){
+            console.log("Error ---> ", error);
+            return null
+        }
     }
 
-    const user = await this.usersRepository.create(createUserDto);
-        return plainToClass(UserResponseDto, user.toObject());
-    }
+
+
+
+
+
+
+    
 
     async findByEmail(email: string): Promise<User | null> {
         return this.usersRepository.findByEmail(email);
@@ -93,8 +122,6 @@ export class UsersService {
         return this.usersRepository.delete(id);
     }
     
-    constructor(
-        @Inject('IUsersRepository') private readonly usersRepository: IUsersRepository,
-    ) {}
+   
 
 }
